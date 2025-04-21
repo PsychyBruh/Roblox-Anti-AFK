@@ -15,7 +15,7 @@ You can use this tool in two ways:
 ### Option 1: Download the Standalone Executable (Windows Only)
 If you don't have Python installed, you can download the precompiled executable for Windows and run it directly.
 
-1. Download the `.exe` file from the [Releases](#) section
+1. Download the `.exe` file from the Releases section
 2. Run the executable, and you'll see the graphical interface.
 3. Click **Start Anti-AFK** to begin the anti-AFK actions.
 4. Click **Stop Anti-AFK** to stop.
