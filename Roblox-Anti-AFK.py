@@ -3,21 +3,33 @@ import threading
 import time
 import pyautogui
 import random
+import pygetwindow as gw
 
 running = False
 keys = ['w', 'a', 's', 'd']
+afk_enabled = False
 
 def afk_loop():
-    global running
+    global running, afk_enabled
     while running:
         time.sleep(900)  # Wait 15 minutes
-        pyautogui.moveRel(0, 10, duration=0.2)
-        pyautogui.moveRel(0, -10, duration=0.2)
-        pyautogui.click()
-        pyautogui.press('space')
-        rand_key = random.choice(keys)
-        pyautogui.press(rand_key)
-        log(f"Did anti-AFK actions (space + click + key: {rand_key})")
+        active_window = gw.getActiveWindow()
+        if active_window and "Roblox" in active_window.title:  # Check if Roblox is the active window
+            if not afk_enabled:
+                afk_enabled = True
+                log("Roblox selected, starting Anti-AFK actions.")
+            pyautogui.moveRel(0, 10, duration=0.2)
+            pyautogui.moveRel(0, -10, duration=0.2)
+            pyautogui.click()
+            pyautogui.press('space')
+            rand_key = random.choice(keys)
+            pyautogui.press(rand_key)
+            log(f"Did anti-AFK actions (space + click + key: {rand_key})")
+        else:
+            if afk_enabled:
+                afk_enabled = False
+                log("Roblox deselected, stopping Anti-AFK actions.")
+                stop_afk()
 
 def start_afk():
     global running
@@ -35,29 +47,18 @@ def log(msg):
     output_text.insert(tk.END, msg + "\n")
     output_text.see(tk.END)
 
-# Modern GUI Setup
+# GUI Setup
 root = tk.Tk()
 root.title("Roblox Anti-AFK")
-root.geometry("350x300")
-root.config(bg="#1c1c1c")  # Dark background color
+root.geometry("300x250")
 
-# Fonts and Styling
-font_style = ("Segoe UI", 12)
-button_font = ("Segoe UI", 14)
-button_bg = "#4caf50"  # Green for active state
-button_fg = "#fff"  # White text
-text_bg = "#333"  # Darker background for text
-text_fg = "#ccc"  # Light grey text
+start_button = tk.Button(root, text="Start Anti-AFK", command=start_afk)
+start_button.pack(pady=10)
 
-# Start and Stop Buttons
-start_button = tk.Button(root, text="Start Anti-AFK", command=start_afk, font=button_font, bg=button_bg, fg=button_fg, relief="flat", width=20, height=2)
-start_button.pack(pady=15)
-
-stop_button = tk.Button(root, text="Stop Anti-AFK", command=stop_afk, font=button_font, bg="#f44336", fg=button_fg, relief="flat", width=20, height=2)
+stop_button = tk.Button(root, text="Stop Anti-AFK", command=stop_afk)
 stop_button.pack(pady=5)
 
-# Output Text Area
-output_text = tk.Text(root, height=8, width=35, font=font_style, bg=text_bg, fg=text_fg, relief="flat", bd=0)
+output_text = tk.Text(root, height=10, width=35)
 output_text.pack(pady=10)
 
 log("Ready. Click Start to begin.")
